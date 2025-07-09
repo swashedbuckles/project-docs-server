@@ -14,7 +14,7 @@ const mime    = require('mime');
 
 const { isSubPath }                               = require('./lib/security');
 const { getFileInfo }                             = require('./lib/fileUtils');
-const { generateDirectoryHTML, generateFileHTML } = require('./lib/htmlGenerator');
+const { generateDirectoryHTML, generateFileHTML, generateImageHTML } = require('./lib/htmlGenerator');
 const { detectLanguage }                          = require('./lib/languageDetector');
 const { shouldIgnoreFile }                        = require('./lib/gitignoreParser');
 
@@ -91,17 +91,29 @@ app.get('*', (req, res) => {
       const fileName = path.basename(fullPath);
       
       const mimeType = mime.getType(fullPath);
-      if (mimeType && (mimeType.startsWith('text/') || mimeType === 'application/javascript' || mimeType === 'application/json')) {
-        const content    = fs.readFileSync(fullPath, 'utf-8');
-        
-        const isMarkdown = ext === '.md';
-        const isHtml     = ext === '.html' || ext === '.htm';
-        const language   = detectLanguage(fullPath, content);
-        
-        const html       = generateFileHTML(fileName, content, requestedPath, isMarkdown, language, isHtml);
-        res.send(html);
+      
+      // Handle images by displaying them in a wrapper page
+      if (mimeType && mimeType.startsWith('image/')) {
+        const imageHTML = generateImageHTML(fileName, requestedPath);
+        res.send(imageHTML);
       } else {
-        res.sendFile(fullPath);
+        // Handle all other files as text
+        try {
+          const content = fs.readFileSync(fullPath, 'utf-8');
+          
+          const isMarkdown = ext === '.md';
+          const isMermaid  = ext === '.mermaid' || ext === '.mmd';
+          const isHtml     = ext === '.html' || ext === '.htm';
+          const language   = detectLanguage(fullPath, content);
+          
+          const html       = generateFileHTML(fileName, content, requestedPath, isMarkdown, language, isHtml, isMermaid);
+          res.send(html);
+        } catch (readError) {
+          // If file can't be read as text, show error message
+          const errorContent = `Error reading file: ${readError.message}`;
+          const html = generateFileHTML(fileName, errorContent, requestedPath, false, null, false, false);
+          res.send(html);
+        }
       }
     }
   } catch (error) {

@@ -24,6 +24,7 @@
     "highlight.js": "^11.9.0",
     "ignore": "^7.0.5",
     "marked": "^9.1.2",
+    "mermaid": "^11.8.1",
     "mime": "^3.0.0"
   },
   "keywords": [

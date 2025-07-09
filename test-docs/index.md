@@ -8,6 +8,7 @@ This is a test markdown file to demonstrate the docs server functionality.
 - Syntax highlighting for code blocks
 - Directory navigation
 - File browsing
+- **Mermaid diagram support** for flowcharts and diagrams
 
 ## Code Example
 
@@ -17,8 +18,23 @@ function hello() {
 }
 ```
 
+## Mermaid Diagram Example
+
+```mermaid
+graph LR
+    A[Documentation] --> B[Markdown]
+    A --> C[HTML]
+    A --> D[JavaScript]
+    B --> E[Mermaid Diagrams]
+    E --> F[Flowcharts]
+    E --> G[Sequence Diagrams]
+    E --> H[Class Diagrams]
+```
+
 ## Links
 
 - [Sample HTML file](./sample.html)
 - [JavaScript example](./example.js)
 - [Subdirectory](./subdirectory/)
+- [Mermaid Diagram](./diagram.mermaid)
+- [Sequence Diagram](./flowchart.mmd)
